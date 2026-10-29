@@ -1,0 +1,91 @@
+import { z } from 'zod';
+
+export const CampaignSchema = z.object({
+  id: z.string().min(1, 'Campaign ID is required'),
+  name: z.string().min(1, 'Campaign name is required'),
+  clientName: z.string().min(1, 'Client name is required'),
+  platform: z.enum(['Meta', 'Google Ads', 'YouTube', 'JioCinema', 'ShareChat', 'LinkedIn']),
+  objective: z.enum([
+    'CONVERSIONS',
+    'TRAFFIC',
+    'BRAND_AWARENESS',
+    'LEAD_GENERATION',
+    'VIDEO_VIEWS',
+    'ENGAGEMENT',
+  ]),
+  status: z.enum(['ACTIVE', 'PAUSED', 'COMPLETED']),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Start date must be YYYY-MM-DD'),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be YYYY-MM-DD').nullable(),
+  currency: z.enum(['INR']).default('INR'),
+  budget: z.number().nonnegative('Budget must be positive or zero'),
+  description: z.string().default(''),
+});
+
+export const CreativeSchema = z.object({
+  id: z.string().min(1, 'Creative ID is required'),
+  campaignId: z.string().min(1, 'Campaign ID is required'),
+  name: z.string().min(1, 'Creative name is required'),
+  thumbnailUrl: z.string().default(''),
+  creativeFormat: z.enum(['STATIC_IMAGE', 'VIDEO', 'ANIMATION', 'CAROUSEL', 'ILLUSTRATED_GRAPHIC']),
+  visualStyle: z.enum([
+    '2D Cartoon',
+    '3D Animation',
+    'Anime-Inspired',
+    'Hand-Drawn Illustration',
+    'Motion Graphics',
+    'Live Action',
+    'Mixed Media',
+    'Other',
+    'Unknown',
+  ]),
+  animationStyle: z.enum([
+    'Flat Animation',
+    '3D Character Animation',
+    'Motion Graphics',
+    'Whiteboard Animation',
+    'Mixed Animation',
+    'Not Applicable',
+    'Unknown',
+  ]),
+  characterUsage: z.enum([
+    'Cartoon Character',
+    'Human Character',
+    'Mascot',
+    'Animal Character',
+    'No Character',
+    'Unknown',
+  ]),
+  durationSeconds: z.number().nullable().default(null),
+  aspectRatio: z.enum(['1:1', '4:5', '9:16', '16:9', 'Other']),
+  primaryMessage: z.string().default(''),
+  callToAction: z.string().default(''),
+  tags: z.array(z.string()).default([]),
+});
+
+export const PerformanceObservationSchema = z.object({
+  id: z.string().min(1, 'ID is required'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
+  campaignId: z.string().min(1, 'Campaign ID is required'),
+  creativeId: z.string().min(1, 'Creative ID is required'),
+  platform: z.enum(['Meta', 'Google Ads', 'YouTube', 'JioCinema', 'ShareChat', 'LinkedIn']),
+  impressions: z.number().nonnegative(),
+  reach: z.number().nullable().default(null),
+  clicks: z.number().nonnegative(),
+  spend: z.number().nonnegative(),
+  conversions: z.number().nonnegative(),
+  conversionValue: z.number().nullable().default(null),
+  videoViews: z.number().nullable().default(null),
+  completedVideoViews: z.number().nullable().default(null),
+  likes: z.number().nullable().default(null),
+  comments: z.number().nullable().default(null),
+  shares: z.number().nullable().default(null),
+  currency: z.enum(['INR']).default('INR'),
+  attributionWindow: z.enum(['7d_click_1d_view', '28d_click', '1d_click', 'unknown']).default('7d_click_1d_view'),
+  source: z.enum(['DEMO', 'IMPORT', 'API', 'CRAWLER']).default('IMPORT'),
+});
+
+export const DatasetImportSchema = z.object({
+  campaigns: z.array(CampaignSchema).optional(),
+  creatives: z.array(CreativeSchema).optional(),
+  observations: z.array(PerformanceObservationSchema),
+});
